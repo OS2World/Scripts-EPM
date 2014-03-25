@@ -1,0 +1,185 @@
+(Note:  this file has been enhanced for EPM.  For best results, use Info-Zip to 
+unpack the zipfile, which will save the extended attributes, and use black type on a 
+light grey background in EPM.)
+
+                                      kenMMepm
+
+    Thanks for trying this EPM extension!
+
+Overview     
+     kenMMepm adds the ability to quickly select the name of a multi-media file
+(or Internet URL) embedded in a text file and automatically launch the appropriate 
+application for viewing/listening to/accessing that file.  
+
+     The file name can be selected by either of two methods:
+     1.  The easiest way is to simply put the cursor anywhere within the filename 
+and select the "MMedia" menu item.  The EPM macro will automatically find the 
+beginning and end of the filename and then launch an application for viewing the 
+file.  (Note:  don't be alarmed when you see a locate circle appear and the cursor 
+jump to another line.  Be patient, and the cursor will return to its original spot 
+after a few seconds.) 
+    2. Use a character mark to highlight the name of the file, and then select the
+"MMedia" menu item to automatically launch an application for displaying the file.
+This is the method to use if the filename (or URL) has embedded spaces or funky
+characters in it.
+
+New in this release (kenMMepm04)
+    Improvements have been made to the FTP and Gopher sections:  kenMMepm now
+automatically resolves the host name and remote directories.
+    It's also now easier to set up an alternate program (such as WebEx) as the FTP
+client, instead of using the default FTPPM.EXE.
+
+How it works
+    kenMMepm stores the fully qualified name (including the extension) of the
+selected file name in a variable called "dataname", and also stores the extension in
+a variable called "DataExt".  The messageline at the bottom of EPM will keep you
+informed of what kenMMepm is using as the "dataname".  
+    kenMMepm will first examine "dataname" to see if it's a URL and, if so, will
+strip off the beginning of the URL ("gopher://", "telnet://", etc.)  when appropriate
+and then launch an Internet app, passing the "dataname" to the app.
+    If the "dataname" isn't an URL, kenMMepm next checks to see if "dataname"
+includes the "@" symbol.  If it does, the "mailto:"  phrase is added to the beginning
+of it, and WebEx is called for sending mail.
+    If "dataname" isn't a URL or "mailto" item, kenMMepm will then look at "DataExt"
+and, based on the extension (and the configuration you previously set), it launches
+an application and passes the file name to that app for processing.  The application
+can be a viewer (for images) an audio player, a spreadsheet program, etc.
+
+Getting Started
+     Requirements:  You'll need a version of EPM above 6, and most likely it'll have 
+to be at least 6.03a.  This is the version I used when writing & testing the code.
+     Configuring kenMMepm:  This is a three-step process:  writing the names of 
+your applications into the kenMMepm.e file; compiling that file into a kenMMepm.ex 
+file; and linking kenMMepm.ex into your copy of EPM. 
+
+     Adding your applications
+    If you're unfamiliar with the E macro language, there's plenty of info available
+in the EPMUSERS.INF and EPMTECH.INF references.  For our purposes here, you need to
+know that putting a semi-colon in the first column of a line makes that line a
+comment and it's ignored.  (You can see an example of this in kenMMepm.e where I've
+"commented out" a few lines that refer to the Windows apps on my system.)  Also, any
+literal string you want to be passed to the application (or to OS/2) must be enclosed
+in quotes.
+     The only section of kenMMepm.e that you'll need to deal with is near the
+beginning -- all those "elseif...then" statements.  
+
+     Internet apps
+    For example, let's look at the lines that launch a Telnet session:
+   elseif upcase(leftstr(dataname, 9))='TELNET://' then
+      dataname=substr(dataname, 10)  -- this line strips out the URL type
+      'start /F linkup.exe telnetpm.exe "'||dataname'"'
+    You don't have to do anything to the first line (the "elseif" one).  This line is
+what figures out what type of URL it's dealing with.  The second line is the line
+that strips out the "telnet://" at the beginning of the URL, because TELNETPM.EXE
+doesn't use that part.  The third line launches the application, and it's in here
+that you'll need to replace the application name (if necessary) with the app you
+prefer to use.  (Whenever you're using WebEx in place of the other Internet apps,
+you'll need to "comment out" that line that strips out the URL type.)
+    You can go through the rest of the Internet section and make the changes you want
+for your setup.  You'll notice that I've used WebExplorer for newsgroups because it
+allows you to designate & read a specific newsgroup, even though you aren't
+subscribed to it.  I'm also using WebEx for sending mail, since it's real easy.  <G>
+    For FTP sessions, you have a choice of using FTPPM.EXE (the default) or
+WebExplorer.  At the beginning of kenMMepm.e is the constant FTP_APP which you can
+set to a value other than 'FTPPM.EXE' if you prefer using WebExplorer (or another FTP
+app).  If you do change this constant, be sure to change the appropriate lines in the
+Internet section lower down.  When using the default FTPPM.EXE, you'll want to set
+the constant "local_dir" to specify the directory on your machine to use for uploads
+& downloads.  Of course you also need to enter your own password (name@address)
+for anonymous log-ins.
+
+     Other apps
+     The next section of kenMMepm.e sets up your other apps for viewing images, 
+listening to sounds, etc.  Let's look at the lines that launch an image viewer:
+   elseif pos(DataExt, 'GIF JPG BMP TIF') then
+      'start /F e:\os2apps\showgif.exe' dataname
+    The first line looks to see if the "DataExt" also appears in the character string
+'GIF JPG BMP TIF'.  This saves space, since you don't have to list a separate "elseif
+DataExt='GIF'", etc., line for every possible file extension, as is done later in
+this section.  Just add your file extensions where appropriate (using all upper case)
+and change the application in the 'start ...'  line to suit your purposes.  You can
+(and probably will) need to add more lines.  Follow these examples and use the
+"elseif ...  then" construct, adding your lines before the indicated end of the "user
+changes" section.
+
+     Compiling the macro
+     Use the ETPM.EXE program supplied with EPM.  The syntax is 
+     etpm <source directory>\kenMMepm.e <target directory>\kenMMepm.ex
+Use the same directory the other EPM *.ex files are in as your target directory.
+
+     Linking the macro
+     There are a few different ways to do it:
+     1.  Bring up an EPM command line and enter:
+          link kenMMepm.ex
+This will add the "MMedia" item to the main menu bar.
+                                         or
+     2.  If you're using a PROFILE.ERX, and want kenMMepm loaded when you start 
+EPM, add the following line to PROFILE.ERX (the quotes are necessary):
+          'link kenMMepm.ex'
+                                         or
+     3.  If you've been re-compiling the main EPM macros to add your customizations, 
+add the following line to your MYSTUFF.E file (the quotes are necessary):
+          'link kenMMepm.ex'
+
+    If you want to remove the macro, at an EPM command line enter:
+          unlink kenMMepm.ex
+That will remove the functionality of the macro and, in most cases, also remove the 
+"MMedia" item from the menu bar.
+
+                         That's all there is to it!  Enjoy!
+             Send any comments, criticisms or suggestions to:
+                                    arway@wwa.com
+
+General Hints and Tips
+     FTP:  FTPPM.EXE takes 16 starting arguments, corresponding to the entry fields 
+in the FTPPM Settings Notebook.  kenMMepm uses only the first 11 as follows:
+     Arg #1 is --->FTPPM.EXE<-----    Program name
+     Arg #2 is --->{host}<-----  Hostname
+     Arg #3 is --->anonymous<-----  User
+     Arg #4 is --->name@address<-----  Password
+     Arg #5 is --->0<-----  Account
+     Arg #6 is --->0<-----  Code Page (unchecked)
+     Arg #7 is --->{local_dir}<-----  Local directory
+     Arg #8 is --->{rem_dir}<-----  Remote directory
+     Arg #9 is --->*<-----  Local file mask
+     Arg #10 is --->*<-----  Remote file mask
+     Arg #11 is --->2<-----  Transfer type (ASCII=1 Binary=2)
+
+     Gopher:  GOPHER.EXE needs the host name as a separate starting parameter.
+Therefore, if you've got a long string of sub-menus, kenMMepm will automatically
+split the URL after the host name with a space and the numeral "1" before passing the
+argument to GOPHER.EXE.
+     For example, if the original URL is:
+gopher://wx.atmos.uiuc.edu/Satellite Images/North America (GOES8-9 Composite) Visible (large=784x611)
+     after modification, the argument sent to GOPHER.EXE is:
+wx.atmos.uiuc.edu 1/Satellite Images/North America (GOES8-9 Composite) Visible (large=784x611)
+     (Of course you'll have to use the character marking method to highlight the 
+entire URL if it contains spaces.)
+
+Tips for Power Users
+     If you know what you're doing and want the ultimate in convenience <G>, you can 
+add the "MMedia" item to the mouse popup menus instead of to the main menu bar.
+     First, you'll need to "comment out" several sections of code in kenMMepm.e:
+           Two of the lines in the "const" section, the six lines of the "definit" section,
+           and the four lines of the "defexit" section.
+    Second, add the two constants (KMM_MENU_MSG and KMM_MENUP_MSG) from kenMMepm.e to
+your MYCNF.E file.
+     Third, add the following two lines to your MOUSE.E file:
+      buildmenuitem menuname, 80, 8017, \0,                               '',          4, 0
+      buildmenuitem menuname, 80, 8026, KMM_MENU_MSG, 'get_dataname'KMM_MENUP_MSG, 0, mpfrom2short(0, 0)
+    Those lines go in four places (starting somewhere around line 1128 of MOUSE.E):
+in the "if filename = .tree" section, in the "Build inside-mark pop-up", the "Build
+outside-mark pop-up", and the "Build no-mark pop-up" sections.  The first line of
+code shown above creates a separator line across the popup menu.  Depending on where
+you want to place the "MMedia" menu item, if you need the separator line below the
+"MMedia" item just transpose those two lines.  Double check to be sure the submenu
+IDs (8017 and 8026) are unique for the popup section you're adding 'em to (you'll
+definitely have to change the IDs for the "if filename = .tree" section).  Then
+re-compile your main E macros.
+
+     DISCLAIMER:  This program is supplied "as is", with no guarantee as to its
+appropriateness, suitability or functionality.  Use entirely at your own risk.  Under
+  no circumstances whatsoever will I be liable in any way for any damages, real or
+                         imagined, from use of this program.
+                              Copyright Ken Arway 1996
+
