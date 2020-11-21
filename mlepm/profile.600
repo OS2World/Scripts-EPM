@@ -1,0 +1,101 @@
+/* profile.erx                                               950919 */
+/*                                                                  */
+/* This file is executed whenever you start EPM                     */
+/*                                                                  */
+/* This version is for EPM v5.60+                                   */
+
+/* defining useful constants                                        */
+MYPATH = ''
+MYACCEL = 9300
+
+/* Linking additional EPM modules                                   */
+link MYPATH'MATCHKEY'
+link MYPATH'MLHOOK'
+link MYPATH'MLTOOLS'
+link MYPATH'MLHILITE'
+link MYPATH'CMODE'
+link MYPATH'EMODE'
+link MYPATH'HTMLMODE'
+link MYPATH'REXXMODE'
+link MYPATH'RCMODE'
+/* link MYPATH'PMODE'  -- commented out as I don't use Pascal...    */
+link bkeys
+
+/* C/C++ and hiliting Mode hook                                     */
+msethook 'modify_hook 'hilite_modify_hook
+/* The following is only required by EPM 6.x                        */
+maddhook 'modify_hook 'fake_autosave
+maddhook 'load_hook   'hilite_load_hook
+maddhook 'load_hook   'c_load_hook
+maddhook 'load_hook   'e_load_hook
+maddhook 'load_hook   'html_load_hook
+maddhook 'load_hook   'rexx_load_hook
+maddhook 'load_hook   'rc_load_hook
+
+/* I like mode in status line                 (here )              */
+msetstatusline 'Line %l of %s  Column %c   %f   %i  %t     %m'
+maddhook 'select_hook 'show_mode_hook
+
+/* Defining global keys                                             */
+buildaccel '*' 34 24 MYACCEL+1 mnextfunction
+buildaccel '*' 34 22 MYACCEL+2 mnextfunction P
+buildaccel '*' 34 23 MYACCEL-1 ml_hilite_line
+activateaccel
+
+/* Adding a 'Headings...' item in the File menu for mfindfunction   */
+buildmenuitem 'default 1 2997 \0 4 0 mfindfunction'
+buildmenuitem 'default 1 2998 ~Headings... 0 0 mfindfunction'
+showmenu 'default'
+
+/* Defining mouse bindings (popup menus)                            */
+register_mouse 1 3 CLICK     0 mpopupmenu 10
+
+/* Hiliting schemes                                                 */
+
+/* C, C++ */
+mhilitedef C 'C H PH IH SQC CPP HPP CXX XH XPH XIH'
+mhiliteadd C 1 'Commentaire' '_/\*_\*/_'
+mhiliteadd C 1 'Commentaire' '_//.*_'
+mhiliteadd C 2 'Directive' '_#:o[^d].*_'
+mhiliteadd C 2 'String' '_"([^"]|\\")*"_'
+mhiliteadd C 2 'String' '_''([^'']|\\'')''_'
+mhiliteadd C 4 'Case' '_^:o(case |default:o\:).*_'
+
+/* E macros */
+mhilitedef E 'E'
+mhiliteadd E 1 'Commentaire' '_^;.*_'
+mhiliteadd E 1 'Commentaire' '_/\*_\*/_'
+mhiliteadd E 1 'Commentaire' '_--.*_'
+mhiliteadd E 2 'String' '_("([^"]|"")*"|''([^'']|'''')*'')_'
+mhiliteadd E 4 'Function' '_^def.*_'
+mhiliteadd E 4 'Directive' '_^:ocompile.*_'
+
+/* Rexx macros */
+mhilitedef REXX 'CMD ERX'
+mhiliteadd REXX 1 'Commentaire' '_/\*_\*/_'
+mhiliteadd REXX 2 'String' '_("([^"]|"")*"|''([^'']|'''')*'')_'
+mhiliteadd REXX 4 'Case' '_when.*then_'
+mhiliteadd REXX 4 'Function' '~^:c\:~'
+
+/* IDL (SOM, ...) */
+mhilitedef OIDL 'IDL CSC SC PSC CS2'
+mhiliteadd OIDL 1 'Commentaire' '_/\*_\*/_'
+mhiliteadd OIDL 1 'Commentaire' '_//.*_'
+mhiliteadd OIDL 1 'Commentaire' '_--.*_'
+mhiliteadd OIDL 1 'Commentaire' '_# .*_'
+mhiliteadd OIDL 4 'Case' '~^[a-zA-Z].*:~'
+
+/* DOS (SYS BAT) */
+mhilitedef DOS 'SYS BAT'
+mhiliteadd DOS 1 'Commentaire' '_^REM.*_'
+
+/* IPF (IPF, IPP) */
+mhilitedef IPF 'IPF IPP'
+mhiliteadd IPF 1 'Commentaire' '_^\.\*.*_'
+mhiliteadd IPF 4 'Function' '_^\:h[0-3].*_'
+
+/* Take ride of the silly (imho) EPM profile handling               */
+minitializehook
+
+'sayerror Profile processed'
+

@@ -1,0 +1,98 @@
+/* readme  - this is the readme file of the MLEPM package    950919 */
+
+MLEPM adds hooks, highlighting and various editing mode to EPM, in a way
+that makes it easy for users to incorporate into their own EPM setup.  It
+is a customized version of EPM that users who don't want to recompile the
+macros can use directly.
+
+Enjoy!
+
+Release notes
+=============
+
+      o  This package is in beta, so, please, be indulgent :), and send
+         me all your comments at the following address:
+
+            lafaix@alto.unice.fr
+
+      o  This release of MLEPM has been tested with EPM v5.51 and 6.00c
+         only.  If you use another version, you may have to recompile
+         the macros with the corresponding ETPM.  Doing so should enable
+         you to use MLEPM with v5.51, and probably with 5.60+.
+
+         [Warp comes with 5.51a, and you can also get it from, say,
+         software.watson.ibm.com, in directory pub/os2/epm...
+
+         EPM v6.00c is available from ftp.leo.org, in directory
+         pub/comp/os/os2/editors/epm6beta.zip]
+
+      o  Online help is included in MLEPM.INF.
+
+      o  See MLEPM.ABS for a description of all included files.
+
+
+Installation:
+=============
+
+      [See MLEPM.INF for more information.]
+
+       1. Unpack this package.
+
+       2. Unpack EX.551 or EX.600, depending of your EPM's version.
+
+       2.bis Copy all .ex files somewhere along your EPMPATH.
+
+       3. Put MPOPUP.EXE somewhere along your PATH.  Start MPOPUP.EXE
+          (and put a Program Object refering to it in your startup
+          folder)
+
+       4. Load epm and edit the styles.smp file.  Customize the
+          included styles (via the "Style" dialog, Ctrl+Y), if needed.
+
+          [This step IS important!]
+
+       5. Enable the profile support, if not already done:
+
+          Bring up the "command" dialog (Ctrl+I), Enter the following
+          command: PROFILE ON. Save your options (Options/Save
+          options)
+
+       6. Merge profile.smp with your profile.erx (if you were not
+          using a profile.erx, just rename profile.smp to profile.erx,
+          and put it somewhere along your EPMPATH).
+
+       7. Exit EPM, and restart it.  Try loading a new C file, and
+          play with it...
+
+      That's all!
+
+
+Common troubles:
+================
+
+      No popmenus
+      No on-the-fly highlighting...
+
+         Is MPOPUP.EXE running ?  If not, then start it!  (It's YOUR
+         responsability to start MPOPUP, so, if you're using MLEPM,
+         putting a shadow of MPOPUP.EXE in your startup folder is
+         highly recommended.)
+
+         [If MPOPUP.EXE is running, there should be a MLPOPUP entry
+          in the task-list.]
+
+
+Original FILE_ID.DIZ:
+=====================
+
+      MLEPM is a package for use with EPM, the
+      OS/2 Enhanced Editor.  It works with both
+      EPM v5.51a and v6.  It provides hooks, on-
+      the-fly highlighting (with regular expr.),
+      popup menus (for v5.51a) and editing modes
+      for C/C++, REXX, E and some other languages.
+      Source code, online documentation & compiled
+      macros included.
+      [FREEWARE, PRELIMINARY RELEASE v0.034.000]
+      Author: Martin Lafaix (lafaix@alto.unice.fr)
+
